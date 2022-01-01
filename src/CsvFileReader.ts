@@ -1,20 +1,29 @@
 import * as fs from 'fs'
+import { dateStringToDate } from './utils'
+import { MatchResult } from './MatchResult'
 
+type MatchData = [Date, string, string, number, number, MatchResult, string]
 export class CsvFileReader {
   constructor(public fileName: string) {}
-  data: string[][] = []
+  data: MatchData[] = []
 
   read(): void {
     this.data = fs
       .readFileSync(this.fileName, 'utf-8')
       .split(/\r?\n/)
       .map((line: string): string[] => line.split(','))
-      .map((arr: any) => {
-        const d = arr[0].split('/') //day, month, year
-        arr[0] = new Date(d[2], d[1] - 1, d[0]) //year, month, day
-        arr[3] = parseInt(arr[3])
-        arr[4] = parseInt(arr[4])
-        return arr
-      })
+      .map(this.mapRow)
+  }
+
+  mapRow(row: string[]): MatchData {
+    return [
+      dateStringToDate(row[0]),
+      row[1],
+      row[2],
+      +row[3],
+      +row[4],
+      row[5] as MatchResult,
+      row[6],
+    ]
   }
 }
