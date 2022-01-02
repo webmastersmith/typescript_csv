@@ -1,20 +1,16 @@
 import { MatchReader } from './MatchReader'
 import { Summary } from './Summary'
-import { CsvFileReader } from './CsvFileReader'
-import { ConsoleReports } from './reportTargets/ConsoleReports'
-import { WinsAnalysis } from './analyzers/WinsAnalysis'
 
-const csvFileReader = new CsvFileReader('./football.csv')
-csvFileReader.read()
-
-const matchReader = new MatchReader(csvFileReader.data)
+const matchReader = MatchReader.fromCsv('./football.csv')
 matchReader.parse()
-console.log(matchReader.data)
+console.log(matchReader.matches)
 
-const summary = new Summary(
-  new WinsAnalysis('Man United'),
-  new ConsoleReports()
+// both below do same thing
+// const summary = new Summary(new WinsAnalysis('Man United'), new HtmlReport())
+// summary.buildAndPrintReport(matchReader.matches)
+
+// same as above
+const summary = Summary.winsAnalysisAndHtmlReport(
+  'Man United',
+  matchReader.matches
 )
-summary.buildAndPrintReport(matchReader.data)
-// const reader = new MatchReader('./football.csv')
-// reader.read()
